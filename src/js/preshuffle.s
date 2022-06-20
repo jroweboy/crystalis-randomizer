@@ -3241,3 +3241,8 @@ PrepareGameInitialDataTable:
 
 ;; ScalingLevels = SCALING_LEVELS
 ;; .export ScalingLevels
+
+.segment "30", "31"
+.org $8000
+
+
