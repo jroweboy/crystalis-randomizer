@@ -41438,6 +41438,7 @@ AudioJumpTable_7X
         $304ac  xx xx:      xxx $xx
         $304ae  xx:         xxx
 ;;; --------------------------------
+AudioOutputVolume
         $304af  xx xx xx:   xxx $xxxx,x
         $304b2  xx xx:      xxx ++++ ; $304f0
 -       $304b4  xx xx xx:   xxx $xxxx,x
@@ -41506,44 +41507,63 @@ AudioJumpTable_7X
         $3052e  xx xx xx:   xxx $xxxx,y
         $30531  xx:         xxx
 ;;; --------------------------------
-;;; Sets the volume (or envelope info)
+;;; Sets the volume max (used as a lookup in the volume table with the envelope)
 AudioJumpTable_8X
         $30532  xx xx:      xxx $xx
-        $30534  xx xx:      xxx $xx
+        $30534  xx xx:      xxx + ; $3054c
+        ; The 8x command is in $f3, so remove the `8` (upper 4 bits)
         $30536  xx xx:      xxx $xx
         $30538  xx xx:      xxx #$xx
         $3053a  xx xx:      xxx $xx
+        ; now $f3 has just the new volume max setting,
+        ; write the new max to $168
         $3053c  xx xx xx:   xxx $xxxx,x
         $3053f  xx xx:      xxx #$xx
         $30541  xx xx:      xxx $xx
         $30543  xx xx xx:   xxx $xxxx,x
+        ; Mark that a new volume max was set?
         $30546  xx xx:      xxx #$xx
         $30548  xx xx:      xxx $xx
         $3054a  xx xx:      xxx $xx
-        $3054c  xx:         xxx
++       $3054c  xx:         xxx
 ;;; --------------------------------
 AudioJumpTable_9X
+; Seems to set the volume with a different mechanism than the eX command
+        ; Load which instrument we are into y
         $3054d  xx xx xx:   xxx $307a6,x
+        ; original bits look like abcd efgh
         $30550  xx xx:      xxx $xx
         $30552  xx:         xxx
         $30553  xx:         xxx
         $30554  xx:         xxx
         $30555  xx:         xxx
+        ; now we have a = efgh 0000 ie: command value bits in the upper 4 bits
+        ; if this is for the triangle channel
         $30556  xx xx:      xxx #$xx
         $30558  xx xx:      xxx ++ ; $30571
+        ; otherwise (its for square or noise etc)
         $3055a  xx:          xxx
+        ; write only the lowest bit ( bit h ) back to $f3
         $3055b  xx xx:        xxx #$xx
         $3055d  xx xx:        xxx $xx
         $3055f  xx xx:        xxx + ; $30569
+        ; if the command value is even (bit h == 1)
+        ; Disable volume envelope (sets bit 6 to 0) because $#bf == ~$#40
         $30561  xx xx xx:      xxx $xxxx,x
         $30564  xx xx:         xxx #$xx
         $30566  xx xx xx:      xxx $xxxx,x
 +       $30569  xx:          xxx
         $3056a  xx:          xxx
+        ; only 3 bits at this point remain (bits fgh the lowest of command bits)
+        ; bit 4 was used to disable volume envelope. Now we drop that one so we only have
+        ; two bits left of the command value. gh00 0000
         $3056b  xx xx:       xxx #$xx
+        ; or it with low bit of $f3 (so now we have gh0h)
         $3056d  xx xx:       xxx $xx
+        ; and always set the 5th bit (gh1h 0000)
         $3056f  xx xx:       xxx #$xx
 ++      $30571  xx xx:      xxx $xx
+        ; set the upper 4 bits of $0168 and flag volume changed
         $30573  xx xx xx:   xxx $xxxx,x
         $30576  xx xx:      xxx #$xx
         $30578  xx xx:      xxx $xx
@@ -41628,12 +41648,14 @@ Add6ToX
         $305f6  xx:         xxx
 ;;; --------------------------------
 AudioJumpTable_eX
+        ; Write the specific envelope into the upper 4 bits of $15c
         $305f7  xx xx:      xxx $xx
         $305f9  xx:         xxx
         $305fa  xx:         xxx
         $305fb  xx:         xxx
         $305fc  xx:         xxx
         $305fd  xx xx xx:   xxx $xxxx,x
+        ; set flag in $114 to denote that this has a volume envelope
         $30600  xx xx xx:   xxx $xxxx,x
         $30603  xx xx:      xxx #$xx
         $30605  xx xx xx:   xxx $xxxx,x
@@ -41736,6 +41758,7 @@ AudioJumpTable_fX
         $306a6  xx xx xx:   xxx $xxxx,x
         $306a9  xx:         xxx
 ;;; --------------------------------
+AudioOutputTimer
         $306aa  xx xx xx:   xxx $xxxx,x
         $306ad  xx xx:      xxx ++ ; $30713
         $306af  xx xx:      xxx #$xx
@@ -41769,7 +41792,7 @@ AudioJumpTable_fX
         $306e8  xx xx xx:   xxx $30714,y
         $306eb  xx xx:      xxx + ; $306f6
         $306ed  xx:         xxx
-        $306ee  xx xx:      xxx #$xx
+        $306ee  xx xx:      xxx #$xx ; subtracts two
         $306f0  xx xx xx:   xxx $xxxx,x
         $306f3  xx:         xxx
         $306f4  xx xx:      xxx #$xx
@@ -41787,10 +41810,11 @@ AudioJumpTable_fX
         $30710  xx xx xx:   xxx $xxxx,y
 ++      $30713  xx:         xxx
 ;;; --------------------------------
-DataTable_30714 
+EvenOnlyMaskTableMaybe
         $30714              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
 ;;; --------------------------------
 ;;; This table seems to be used by the fX audio opcodes
+PitchEnvelopeTable
         $30724              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
         $30734              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
         $30744              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
@@ -41845,6 +41869,7 @@ AudioPitchTableHi
         $30898              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
         $308a8              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
 ;;; --------------------------------
+AudioVolumeEnvelopeTable
         $308b8              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
         $308c0              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
         $308d0              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
@@ -41863,6 +41888,7 @@ AudioPitchTableHi
         $309a0              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
         $309b0              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
 ;;; --------------------------------
+AudioVolumeEnvelopeForSquare2Table
         $309b8              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
         $309c0              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
         $309d0              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
@@ -41888,6 +41914,10 @@ AudioDelayTable
         $30ac8              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
         $30ad0              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
 ;;; --------------------------------
+;;; Quick lookup table to convert from full 8 bit volume number to a 4 bit volume used by NES
+;;; This is a table that calculates max(1, a + b - 16) unless a or b are 0 (then its 0)
+;;; where a = value in and b = (offset >> 4)
+AudioVolumeLookupTable
         $30ad8              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
         $30ae0              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
         $30af0              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx

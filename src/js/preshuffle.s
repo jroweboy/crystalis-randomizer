@@ -3241,3 +3241,47 @@ PrepareGameInitialDataTable:
 
 ;; ScalingLevels = SCALING_LEVELS
 ;; .export ScalingLevels
+
+
+.segment "18", "19"
+
+.org $ad3e ; $31c6d Track 0a - Intro
+.word(SpecialSongSq1)
+.word(SpecialSongSq2)
+.word(SpecialSongTri)
+.word(SpecialSongDMC)
+FREE_UNTIL $b02a
+
+.reloc
+
+SpecialSongSq1:
+  .byte $91,$8d,$e9,$f3
+  .byte $6e,$40
+  .byte $00
+
+SpecialSongSq2:
+  .byte $91,$8d,$ef,$f1
+  .byte $53,$32,$2f,$33,$2c,$32,$2f,$59,$33,$2c,$77,$59,$40
+  .byte $53,$32,$2f,$33,$2c,$32,$2f,$59,$33,$2c,$77,$59,$40
+  .byte $53,$34,$2f,$2a,$2f,$62,$32,$25,$6e,$2a
+  .byte $53,$32,$2f,$33,$2c,$32,$2f,$59,$33,$2c,$77,$59,$40
+  .byte $53,$32,$2f,$33,$2c,$32,$2f,$59,$33,$2c,$77,$59,$40
+  .byte $53,$34,$20,$22,$20,$62,$32,$25,$53,$34,$20,$22,$20,$6b,$32,$2a
+  
+  .byte $53,$32,$2f,$33,$2c,$32,$2f,$59,$33,$2c,$77,$59,$40
+  .byte $53,$32,$2f,$33,$2c,$32,$2f,$59,$33,$2c,$77,$59,$40
+  .byte $6e,$32,$25,$2a
+
+  .byte $53,$32,$2f,$33,$2c,$32,$2f,$59,$33,$2c,$77,$59,$40
+  .byte $53,$32,$2f,$33,$2c,$32,$2f,$59,$33,$2c,$77,$59,$40
+  .byte $6e,$32,$25,$2a
+
+  .byte $16
+
+SpecialSongTri:
+  .byte $53,$40,$00
+
+SpecialSongDMC:
+  .byte $53,$40,$00
+
+
