@@ -56,6 +56,8 @@ UPDATE_REFS target @ refs
 ;;   .move bytes, S
 ;; .endmacro
 
+.define _TRAINER 1
+
 .segment "00"   :bank $00 :size $2000 :off $00000 :mem $8000
 .segment "01"   :bank $01 :size $2000 :off $02000 :mem $a000
 .segment "02"   :bank $02 :size $2000 :off $04000 :mem $8000
@@ -311,6 +313,9 @@ FREE "13" [$bff2, $c000)
 
 ;;; Random unused data table
 FREE "14" [$8520, $8528)
+
+;; Unused table for dpcm samples
+FREE "18" [$8be0, $8c0c)
 
 ;;; NOTE: there's space here, but we glob it into the space
 ;;; recovered from defragging MapData... if we want it back

@@ -3245,18 +3245,28 @@ PrepareGameInitialDataTable:
 
 .segment "18", "19"
 
+FREE "18" [$8be0, $8c0c)
+
 SONG_INDEX = $0c
-.org $9f4b ; currently replacing town for testing
+.org $9f4c ; replace dragyon 2
 .word (SpecialSongSq1)
 .word (SpecialSongSq2)
 .word (SpecialSongTri)
 .word (SpecialSongNoise)
 FREE_UNTIL $a0e5
 
-.reloc
+;; remove dyna and replace it as well since the song doesn't fit in just draygon 2 spot
+.org $a7e8
+.word (SpecialSongSq1)
+.word (SpecialSongSq2)
+.word (SpecialSongTri)
+.word (SpecialSongNoise)
+FREE_UNTIL $a9a0
+
 
 ; bpm = 120 (aka $20 frames a quarter note.)
 
+.reloc
 SpecialSongSq1:
   .byte $95,$8d,$ee,$f3
   ; rest for 4 measures or $60 * 5 + $20
@@ -3298,6 +3308,7 @@ SpecialSongSq1:
     .byte $64,$34,$2f,$59,$2a,$40,$6e,$35,$2c,$2f,$2a,$20,$61,$2f,$40,$2d,$40
     .byte $a8 ;rts
 
+.reloc 
 SpecialSongSq2:
   .byte $91,$89,$ef,$f1
 
@@ -3416,50 +3427,60 @@ SpecialSongSq2:
   ; end
   .byte SONG_INDEX
 
+.reloc 
   @C_C_Arp:
     .byte $53,$32,$2f,$33,$2c,$32,$2f
     .byte $60,$33,$2c,$40
     .byte $53,$32,$2f,$33,$2c,$32,$2f
     .byte $5c,$33,$2c,$40
     .byte $a8 ; rts
+.reloc 
   @F_F_Arp:
     .byte $53,$32,$26,$33,$2f,$32,$26
     .byte $60,$33,$2f,$40
     .byte $53,$32,$26,$33,$2f,$32,$26
     .byte $5c,$33,$2f,$40
     .byte $a8 ; rts
+.reloc 
   @G_G_Arp:
     .byte $53,$33,$2c,$20,$2c
     .byte $60,$20,$40
     .byte $53,$2c,$20,$2c
     .byte $5c,$20,$40
     .byte $a8 ; rts
+.reloc 
   @Ab_A_With_F_A_F_Blip:
     .byte $53,$32,$25,$34,$2f,$2a,$2f,$62,$32,$25
     .byte $6e,$2a
     .byte $a8 ; rts
+.reloc 
   @Db_D_With_Ab_D_Ab_Blip:
     .byte $53,$33,$21,$34,$26,$35,$2d,$34,$26,$62,$33,$21
     .byte $6e,$2d
     .byte $a8 ; rts
+.reloc 
   @Eb_E_With_C_E_C_Blip:
     .byte $53,$33,$22,$35,$2c,$2e,$2c,$62,$33,$22
     .byte $6e,$2e
     .byte $a8 ; rts
+.reloc 
   @Ab_A_With_G_Eb_G_Blip:
     ; Ab
     .byte $53,$32,$25,$34,$20,$22,$20,$62,$32,$25
     ; A
     .byte $53,$2a,$34,$20,$22,$20,$62,$32,$2a
     .byte $a8 ; rts
+.reloc 
   @Db_D_With_C_Ab_C_Blip:
     .byte $53,$33,$21,$35,$2c,$34,$25,$35,$2c,$62,$33,$21
     .byte $53,$2d,$35,$2c,$34,$25,$35,$2c,$62,$33,$2d
     .byte $a8 ; rts
+.reloc 
   @Eb_E_With_D_Bb_D_Blip:
     .byte $53,$33,$22,$35,$2d,$34,$26,$35,$2d,$62,$33,$22
     .byte $53,$2e,$35,$2d,$34,$26,$35,$2d,$62,$33,$2e
     .byte $a8 ; rts
+.reloc 
   @Ab_A:
     .byte $6e,$32,$25,$2a
     .byte $a8 ; rts
@@ -3470,6 +3491,7 @@ SpecialSongSq2:
     .byte $6e,$33,$22,$2e
     .byte $a8 ; rts
 
+.reloc 
 SpecialSongTri:
   .byte $98,$8f
 
@@ -3541,7 +3563,7 @@ SpecialSongTri:
     .byte $6f,$2c,$77,$40,$5e,$40
     .byte $a8 ; rts
 
-
+.reloc
 ; $22 hat $2a kick $24 ?? $28 ??
 SpecialSongNoise:
   .byte $91,$e0
