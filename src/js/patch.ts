@@ -30,7 +30,7 @@ import { shuffleTrades } from './pass/shuffletrades.js';
 import { standardMapEdits } from './pass/standardmapedits.js';
 import { toggleMaps } from './pass/togglemaps.js';
 import { unidentifiedItems } from './pass/unidentifieditems.js';
-import { misspellItems } from './pass/misspellitems.js';
+import { misspellItems, misspellJeffPeters } from './pass/misspellitems.js';
 import { writeLocationsFromMeta } from './pass/writelocationsfrommeta.js';
 import { Random } from './random.js';
 import { Rom } from './rom.js';
@@ -311,6 +311,7 @@ async function shuffleInternal(rom: Uint8Array,
   rescaleMonsters(parsed, flags, random);
   unidentifiedItems(parsed, flags, random);
   misspellItems(parsed, flags, random);
+  misspellJeffPeters(parsed, flags, random);
   shuffleTrades(parsed, flags, random);
   if (flags.shuffleHouses()) shuffleHouses(parsed, flags, random);
   if (flags.shuffleAreas()) shuffleAreas(parsed, flags, random);

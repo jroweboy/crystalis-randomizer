@@ -64,3 +64,30 @@ export function misspellItems(rom: Rom, flags: FlagSet, random: Random) {
     item.messageName = item.menuName = name.join('');
   }
 }
+
+const misspeltJeffNames: string[] = [
+  'JEFF BETERS',
+  'JEPH PETERS',
+  'JEFFERY PETERS',
+  'THE BIG JEFF',
+  'GEOFF PETERS',
+  'JEFFFFFFFFFFFF',
+  'PETERS JEFF',
+  'J PETERS III',
+  'GIF PETERS',
+  'JEFFJEFFJEFF',
+];
+
+// Add a 1 in 10 chance to misspell JEFF PETERS
+export function misspellJeffPeters(rom: Rom, _flags: FlagSet, random: Random) {
+  // JEFF PETERS name is 0x11 bytes copied from [0x23d9e to 0x23daf) into PPUADDR $2168
+  // Its got 3 spaces in front of it to line it up with the others, so effectively
+  // we only get 14 characters.
+  const startAddr = 0x23d9e;
+  if (random.nextInt(10) == 1) {
+    const misspelling = random.pick(misspeltJeffNames).padEnd(14, " ").padStart(17, " ");
+    for (let i = 0; i < misspelling.length; ++i) {
+      rom.prg[startAddr + i] = misspelling.charCodeAt(i);
+    }
+  }
+}
