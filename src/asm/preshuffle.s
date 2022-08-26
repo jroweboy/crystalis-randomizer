@@ -1,6 +1,8 @@
 ;;; Various flag-based defines will be prepended to this file, indicated
 ;;; by a `_` prefix.
 
+; .define _TRAINER 1
+
 .segment "0e", "0f"
 
 ;;; Patch the end of ItemUse to check for a few more items.

@@ -2,6 +2,11 @@
 ;;; Cleanup NMI and NMI related flag usages
 .pushseg "fe", "ff"
 
+.org $e979
+  cpy #$00 ; Fix scroll in maps larger than a single screen to not be offset by one
+
+
+
 ; Update the NMI Vector to point to our new handler
 .org $fffa
 .word (NMIHandler)
@@ -16,6 +21,38 @@ lda #%00000000
 sta NmiDisable
 .endmacro
 
+.org $e93f
+  jsr CompareScrollYToPreviousValue
+  nop
+  bcc *+5
+
+.org $e958
+  jsr CompareScrollXToPreviousValue
+  nop
+  bcc *+5
+
+.reloc
+; Sets carry if we need to draw the next line
+; Computes curr - prev and sets carry if they are different
+CompareScrollXToPreviousValue:
+  ldx #2
+  SKIP_TWO_BYTES ; skip over the other ldx. this is safe because ldx #0 is $00ad and doesn't affect any registers
+CompareScrollYToPreviousValue:
+  ldx #0
+CompareScrollToPreviousValue:
+  cmp $28,x
+  beq ++ ; They are equal so clear carry and exit
+  ; check if 0 is in range (previous mod 8, next mod 8)
+  
+  and #$f8
+  ; bcc +
+    ; sec
+    rts
+; + 
+++clc
+  rts
+
+
 ;;;--------------------------
 ;;; HandleNMI
 ; Changes from Vanilla NMI handler
@@ -29,18 +66,22 @@ NMIHandler:
 
 .ifdef _STATS_TRACKING
   inc StatTimerLo
-    bne @CheckIfNMIEnabled
+  bne @CheckIfNMIEnabled
     inc StatTimerMd
-      bne @CheckIfNMIEnabled
+    bne @CheckIfNMIEnabled
       inc StatTimerHi
 @CheckIfNMIEnabled:
 .endif ; _STATS_TRACKING
-
   bit NmiDisable
-  bpl @ContinueNMI
+  bpl MainNMI
     inc NmiSkipped
     rti
-@ContinueNMI:
+; In the case where NMI is skipped, and we almost immediately reenabled it, we need to re-run the main part
+; of NMI. But since we will rti at the end of the function, we need a separate entry point that will first
+; do php so that the rti will pull processor state, and then pull the return address.
+MainNMIWithPHP:
+  php
+MainNMI:
   pha
     txa
     pha
@@ -176,12 +217,16 @@ WriteNametableDataToPpu:
 .reloc
 DisableNMI:
   DISABLE_NMI
-  rts
-
-.reloc
+- rts
 EnableNMI:
   ENABLE_NMI
-  rts
+  ; BUG FIX in the original code, when NMI is re-enabled during vblank, and an NMI was skipped,
+  ; then setting the bit 7 of PPUCTRL will trigger an NMI. we can fake this by checking if $2002
+  ; bit 7 is set and jmp to the main NMI code if its set.
+  bit PPUSTATUS
+  bpl - ; save a byte. save a life. jump to the rts in DisableNMI.
+    jmp MainNMIWithPHP
+    ; implicit rts
 
 .reloc
 WaitForOAMDMA:
@@ -196,6 +241,9 @@ ImmediateWriteNametableDataToPpu:
   DISABLE_NMI
   jsr WriteNametableDataToPpu
   ENABLE_NMI
+  ; This could normally trigger an NMI, but in reality it shouldn't need to happen yet because rendering
+  ; is off when this is called, so it doesn't really need to run at this point since the screen is darkened.
+  ; if my understanding is wrong tho, we can always add the `jmp MainNMIWithPHP` to this as well
   rts
 
 ;;--------------------------------
@@ -933,6 +981,65 @@ NMIHandlerInternal:
     lda $6140 + i
     sta PPUDATA
   .endrepeat
+    ; TODO: figure out how to use these macros to make this work within a repeat block
+    ; lda $6140
+    ; sta PPUDATA
+    ; lda $6141
+    ; sta PPUDATA
+    ; lda $6142
+    ; sta PPUDATA
+    ; lda $6143
+    ; sta PPUDATA
+    ; bit PPUDATA
+    ; lda $6145
+    ; sta PPUDATA
+    ; lda $6146
+    ; sta PPUDATA
+    ; lda $6147
+    ; sta PPUDATA
+    ; bit PPUDATA
+    ; lda $6149
+    ; sta PPUDATA
+    ; lda $614a
+    ; sta PPUDATA
+    ; lda $614b
+    ; sta PPUDATA
+    ; bit PPUDATA
+    ; lda $614d
+    ; sta PPUDATA
+    ; lda $614e
+    ; sta PPUDATA
+    ; lda $614f
+    ; sta PPUDATA
+    ; bit PPUDATA
+    ; lda $6151
+    ; sta PPUDATA
+    ; lda $6152
+    ; sta PPUDATA
+    ; lda $6153
+    ; sta PPUDATA
+    ; bit PPUDATA
+    ; lda $6155
+    ; sta PPUDATA
+    ; lda $6156
+    ; sta PPUDATA
+    ; lda $6157
+    ; sta PPUDATA
+    ; bit PPUDATA
+    ; lda $6159
+    ; sta PPUDATA
+    ; lda $615a
+    ; sta PPUDATA
+    ; lda $615b
+    ; sta PPUDATA
+    ; bit PPUDATA
+    ; lda $615d
+    ; sta PPUDATA
+    ; lda $615e
+    ; sta PPUDATA
+    ; lda $615f
+    ; sta PPUDATA
+    
 @AfterPaletteUpdate:
   ;; Write PPUMASK from $01
   lda PpuMaskShadow

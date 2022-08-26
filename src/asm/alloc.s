@@ -11,7 +11,7 @@
 
 .segment "fe", "ff"
 
-.ifdef _EXPAND_PRG
+.if 0
 
 ;;; Does a cross-page jump to a subroutine on segment 38.
 ;;; Does not preserve the accumulator.  Must not be called
