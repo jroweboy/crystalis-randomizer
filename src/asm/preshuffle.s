@@ -3584,7 +3584,7 @@ PrepareGameInitialDataTable:
 .repeat 2
   .byte PERMANENT_LENGTH
   .word (StatTrackingBase)
-  .repeat 5
+  .repeat $17
     .byte $00
   .endrepeat
 .endrepeat

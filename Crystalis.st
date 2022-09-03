@@ -526,9 +526,10 @@ define GAME_MODE_PAWN_SHOP       $23
 define GAME_MODE_EMPTY_SHOP      $24
 
 ;;; Corresponds to values of $51
-define SCREEN_MODE_NORMAL      $00
-define SCREEN_MODE_TEXT        $01
-define SCREEN_MODE_MOVIE       $03
+define SCREEN_MODE_NORMAL        $00
+define SCREEN_MODE_TEXT          $01
+define SCREEN_MODE_PLAYER_STATUS $02
+define SCREEN_MODE_MOVIE         $03
         ;; The giant insect and Draygon 2 are rendered in the background.
         ;; There are two dedicated screen modes for this: $07 is the normal
         ;; mode (equivalent to $00) and $09 is the analogue to $01 for
@@ -25783,8 +25784,8 @@ ObjectActionJump_6b_Draygon2
         $1f2e2  xx xx:      xxx $xx
         $1f2e4  xx xx:      xxx #$xx
         $1f2e6  xx xx xx:   xxx $xxxx
-        $1f2e9  xx xx:      xxx $xx
-        $1f2eb  xx xx:      xxx #$xx
+        $1f2e9  xx xx:      xxx ScreenMode
+        $1f2eb  xx xx:      xxx #SCREEN_MODE_PLAYER_STATUS
         $1f2ed  xx xx:      xxx $xx
         $1f2ef  xx xx:      xxx #SCREEN_MODE_NTBOSS
         $1f2f1  xx xx:      xxx ScreenMode
@@ -26572,15 +26573,15 @@ ObjectActionJump_6f
         $1f92b  xx xx:      xxx #$xx
         $1f92d  xx xx:      xxx $xx
         $1f92f  xx xx xx:   xxx $3ff80
-        $1f932  xx xx:      xxx $xx
+        $1f932  xx xx:      xxx PpuMaskShadow
         $1f934  xx xx:      xxx #$xx
-        $1f936  xx xx:      xxx $xx
+        $1f936  xx xx:      xxx PpuMaskShadow
         $1f938  xx xx xx:   xxx WaitForOAMDMA
         $1f93b  xx xx:      xxx #$xx
         $1f93d  xx xx xx:   xxx DrawFullScreenByUsingVerticalScroll
-        $1f940  xx xx:      xxx $xx
+        $1f940  xx xx:      xxx PpuMaskShadow
         $1f942  xx xx:      xxx #$xx
-        $1f944  xx xx:      xxx $xx
+        $1f944  xx xx:      xxx PpuMaskShadow
         $1f946  xx:         xxx
 ;;; --------------------------------
         ;; Runs when dyna defeated
@@ -26877,9 +26878,9 @@ MainGameModeJump_0c
         $1fc4b  xx xx:      xxx #$xx
         $1fc4d  xx xx:      xxx ScreenMode
         $1fc4f  xx xx:      xxx $xx
-        $1fc51  xx xx:      xxx $xx
+        $1fc51  xx xx:      xxx PpuMaskShadow
         $1fc53  xx xx:      xxx #$xx
-        $1fc55  xx xx:      xxx $xx
+        $1fc55  xx xx:      xxx PpuMaskShadow
         $1fc57  xx xx:      xxx #$xx
         $1fc59  xx xx xx:   xxx $xxxx
         $1fc5c  xx xx:      xxx #$xx
@@ -26931,9 +26932,9 @@ MainGameModeJump_0c
         $1fcc1  xx xx xx:   xxx StageNametableWriteFromTable
         $1fcc4  xx xx xx:   xxx WaitForOAMDMA
         $1fcc7  xx xx xx:   xxx $1febf
-        $1fcca  xx xx:      xxx $xx
+        $1fcca  xx xx:      xxx PpuMaskShadow
         $1fccc  xx xx:      xxx #$xx
-        $1fcce  xx xx:      xxx $xx
+        $1fcce  xx xx:      xxx PpuMaskShadow
         $1fcd0  xx xx:      xxx #$xx
         $1fcd2  xx xx:      xxx ScreenMode
         $1fcd4  xx xx:      xxx #$xx
@@ -26944,10 +26945,10 @@ MainGameModeJump_0c
         $1fcdf  xx xx:      xxx $xx
         $1fce1  xx xx xx:   xxx $xxxx
         $1fce4  xx xx:      xxx $xx
-        $1fce6  xx xx:      xxx $xx
+        $1fce6  xx xx:      xxx PpuCtrlShadow
         $1fce8  xx xx:      xxx #$xx
         $1fcea  xx xx:      xxx #$xx
-        $1fcec  xx xx:      xxx $xx
+        $1fcec  xx xx:      xxx PpuCtrlShadow
         $1fcee  xx xx:      xxx #$xx
 -       $1fcf0  xx xx xx:    xxx $1fd84,x
         $1fcf3  xx xx xx:    xxx $xxxx,x
@@ -27012,9 +27013,9 @@ MainGameModeJump_0c
         $1fd73  xx xx:      xxx -- ; $1fd51
         $1fd75  xx xx:      xxx #$xx
         $1fd77  xx xx:      xxx ScreenMode
-        $1fd79  xx xx:      xxx $xx
+        $1fd79  xx xx:      xxx PpuMaskShadow
         $1fd7b  xx xx:      xxx #$xx
-        $1fd7d  xx xx:      xxx $xx
+        $1fd7d  xx xx:      xxx PpuMaskShadow
         $1fd7f  xx xx:      xxx GameMode
         $1fd81  xx xx xx:   xxx $1fddb
 ;;; --------------------------------
@@ -27245,10 +27246,10 @@ PlayerInventoryMenu         ; @@ RomBank_10 $8000
         $2002f  xx xx xx:   xxx WaitForOAMDMA
         $20032  xx xx:      xxx #$xx
         $20034  xx xx:      xxx ScreenMode
-        $20036  xx xx:      xxx $xx
+        $20036  xx xx:      xxx PpuCtrlShadow
         $20038  xx xx:      xxx #$xx
         $2003a  xx xx:      xxx #$xx
-        $2003c  xx xx:      xxx $xx
+        $2003c  xx xx:      xxx PpuCtrlShadow
         $2003e  xx xx:      xxx #$xx
         $20040  xx xx xx:   xxx $xxxx
         $20043  xx xx xx:   xxx $xxxx
@@ -28698,20 +28699,20 @@ WriteHeaderToNametableQueue
         $20acd  xx xx:      xxx #$xx
         $20acf  xx xx:      xxx $xx
         ;; Check if the callee requested to re-enable NMI after
-        $20ad1  xx xx:      xxx $xx
+        $20ad1  xx xx:      xxx PpuMaskShadow
         $20ad3  xx xx:      xxx #$xx
         $20ad5  xx xx:      xxx + ; $20ada
         $20ad7  xx xx xx:   xxx WriteNametableDataToPpu
 +       $20ada  xx xx xx:   xxx EnableNMI_20add
 ;;; --------------------------------
 EnableNMI_20add
-        $20add  xx xx:      xxx $xx
+        $20add  xx xx:      xxx PpuCtrlShadow
         $20adf  xx xx:      xxx #$xx
         $20ae1  xx xx xx:   xxx $xxxx
         $20ae4  xx:         xxx
 ;;; --------------------------------
 DisableNMI_20ae5
-        $20ae5  xx xx:      xxx $xx
+        $20ae5  xx xx:      xxx PpuCtrlShadow
         $20ae7  xx xx:      xxx #$xx
         $20ae9  xx xx xx:   xxx $xxxx
         $20aec  xx:         xxx
@@ -30678,10 +30679,10 @@ MainLoop_PrepareEndingSequence
         $2201d  xx xx:      xxx ScreenMode
         $2201f  xx xx:      xxx #$xx
         $22021  xx xx:      xxx $xx
-        $22023  xx xx:      xxx $xx
-        $22025  xx xx:      xxx $xx
-        $22027  xx xx:      xxx $xx
-        $22029  xx xx:      xxx $xx
+        $22023  xx xx:      xxx ScreenXLo
+        $22025  xx xx:      xxx ScreenYLo
+        $22027  xx xx:      xxx ScreenXHi
+        $22029  xx xx:      xxx ScreenYHi
         $2202b  xx xx xx:   xxx $xxxx
         $2202e  xx xx xx:   xxx $xxxx
         $22031  xx xx xx:   xxx $xxxx
@@ -31068,14 +31069,14 @@ CreditScene_03
         $2230c  xx xx:      xxx $xx
         $2230e  xx:         xxx
         $2230f  xx xx:      xxx #$xx
-        $22311  xx xx:      xxx $xx
-        $22313  xx xx:      xxx $xx
+        $22311  xx xx:      xxx ScreenYLo
+        $22313  xx xx:      xxx ScreenYLo
         $22315  xx xx:      xxx #$xx
         $22317  xx xx:      xxx $xx
-        $22319  xx xx:      xxx $xx
-        $2231b  xx xx:      xxx $xx
+        $22319  xx xx:      xxx ScreenYLo
+        $2231b  xx xx:      xxx ScreenYHi
         $2231d  xx xx:      xxx #$xx
-        $2231f  xx xx:      xxx $xx
+        $2231f  xx xx:      xxx ScreenYHi
         $22321  xx xx xx:   xxx $xxxx
         $22324  xx xx:      xxx #$xx
         $22326  xx xx:      xxx $xx
@@ -31164,8 +31165,8 @@ CreditScene_07
         $223cb  xx xx:      xxx #$xx
         $223cd  xx xx xx:   xxx $xxxx
         $223d0  xx xx:      xxx #$xx
-        $223d2  xx xx:      xxx $xx
-        $223d4  xx xx:      xxx $xx
+        $223d2  xx xx:      xxx ScreenYLo
+        $223d4  xx xx:      xxx ScreenYHi
         $223d6  xx xx:      xxx #$xx
         $223d8  xx xx:      xxx #$xx
         $223da  xx xx:      xxx #$xx
@@ -31560,27 +31561,27 @@ DataTable_2271c
         $2271e  xx xx:      xxx $xx
 ;;; --------------------------------
 DisableNMI_altbank11
-        $22720  xx xx:      xxx $xx
+        $22720  xx xx:      xxx PpuCtrlShadow
         $22722  xx xx:      xxx #$xx
         $22724  xx xx xx:   xxx $xxxx
         $22727  xx:         xxx
 ;;; --------------------------------
 EnableNMI_altbank11
-        $22728  xx xx:      xxx $xx
+        $22728  xx xx:      xxx PpuCtrlShadow
         $2272a  xx xx:      xxx #$xx
         $2272c  xx xx xx:   xxx $xxxx
         $2272f  xx:         xxx
 ;;; --------------------------------
-        $22730  xx xx:      xxx $xx
+        $22730  xx xx:      xxx PpuMaskShadow
         $22732  xx xx:      xxx #$xx
-        $22734  xx xx xx:   xxx $xxxx
-        $22737  xx xx:      xxx $xx
+        $22734  xx xx xx:   xxx PPUMASK
+        $22737  xx xx:      xxx PpuMaskShadow
         $22739  xx:         xxx
 ;;; --------------------------------
-        $2273a  xx xx:      xxx $xx
+        $2273a  xx xx:      xxx PpuMaskShadow
         $2273c  xx xx:      xxx #$xx
-        $2273e  xx xx xx:   xxx $xxxx
-        $22741  xx xx:      xxx $xx
+        $2273e  xx xx xx:   xxx PPUMASK
+        $22741  xx xx:      xxx PpuMaskShadow
         $22743  xx:         xxx
 ;;; --------------------------------
 WaitForOAMDMA_altbank11
@@ -31621,7 +31622,8 @@ WaitForOAMDMA_altbank11
 ;;; --------------------------------
         $22788  xx xx:      xxx #$xx
         $2278a  xx xx:      xxx #$xx
-        $2278c  xx xx:      xxx $xx
+        ; Note: this is in credits, so it may not be used as screen mode here
+        $2278c  xx xx:      xxx ScreenMode
         $2278e  xx xx:      xxx $xx
         $22790  xx xx:      xxx #$xx
         $22792  xx xx:      xxx $xx
@@ -32671,13 +32673,13 @@ AnimateSNKLogo
         ;; 12 columns, 3 rows
         $24071  xx xx xx:   xxx WriteRectangleToNametable
         $24074  xx xx:      xxx #$xx
-        $24076  xx xx:      xxx $xx
-        $24078  xx xx:      xxx $xx
+        $24076  xx xx:      xxx ScreenXLo
+        $24078  xx xx:      xxx ScreenXHi
         $2407a  xx xx:      xxx $xx
         $2407c  xx xx:      xxx #$xx
-        $2407e  xx xx:      xxx $xx
+        $2407e  xx xx:      xxx ScreenYLo
         $24080  xx xx:      xxx #$xx
-        $24082  xx xx:      xxx $xx
+        $24082  xx xx:      xxx ScreenYHi
         $24084  xx xx xx:   xxx EnableNMI_alt2
         $24087  xx xx xx:   xxx WaitForOAMDMA_alt2
         $2408a  xx xx:      xxx #$xx
@@ -32695,13 +32697,13 @@ AnimateSNKLogo
         $240ab  xx xx xx:     xxx $xxxx
         $240ae  xx xx:        xxx #$xx
         $240b0  xx xx:       xxx - ; $240a5
-        $240b2  xx xx:       xxx $xx
-        $240b4  xx xx:       xxx $xx
+        $240b2  xx xx:       xxx ScreenYLo
+        $240b4  xx xx:       xxx ScreenYLo
         $240b6  xx xx:       xxx #$xx
         $240b8  xx xx:      xxx - ; $240a5
         $240ba  xx xx:      xxx #$xx
-        $240bc  xx xx:      xxx $xx
-        $240be  xx xx:      xxx $xx
+        $240bc  xx xx:      xxx ScreenYLo
+        $240be  xx xx:      xxx ScreenYHi
         $240c0  xx xx:      xxx #$xx
         $240c2  xx xx xx:   xxx $xxxx
 -       $240c5  xx xx xx:    xxx WaitForOAMDMA_alt2
@@ -32796,29 +32798,29 @@ AnimateSNKLogo
         $24171  xx xx xx:   xxx $2412d
 ;;; --------------------------------
 DisableNMI_alt2
-        $24174  xx xx:      xxx $xx
+        $24174  xx xx:      xxx PpuCtrlShadow
         $24176  xx xx:      xxx #$xx
         $24178  xx xx xx:   xxx PPUCTRL
         $2417b  xx:         xxx
 ;;; --------------------------------
 EnableNMI_alt2
-        $2417c  xx xx:      xxx $xx
+        $2417c  xx xx:      xxx PpuCtrlShadow
         $2417e  xx xx:      xxx #$xx
         $24180  xx xx xx:   xxx PPUCTRL
         $24183  xx:         xxx
 ;;; --------------------------------
 DisableSpritesAndLeftColumnRendering
-        $24184  xx xx:      xxx $xx
+        $24184  xx xx:      xxx PpuMaskShadow
         $24186  xx xx:      xxx #$xx
         $24188  xx xx xx:   xxx PPUMASK
-        $2418b  xx xx:      xxx $xx
+        $2418b  xx xx:      xxx PpuMaskShadow
         $2418d  xx:         xxx
 ;;; --------------------------------
 EnableSpritesAndLeftColumnRendering
-        $2418e  xx xx:      xxx $xx
+        $2418e  xx xx:      xxx PpuMaskShadow
         $24190  xx xx:      xxx #$xx
         $24192  xx xx xx:   xxx PPUMASK
-        $24195  xx xx:      xxx $xx
+        $24195  xx xx:      xxx PpuMaskShadow
         $24197  xx:         xxx
 ;;; --------------------------------
 WaitForOAMDMA_alt2
@@ -33644,11 +33646,11 @@ MainLoop_PrepareTitleScreen
         $25ff5  xx xx xx:   xxx $xxxx
         $25ff8  xx xx xx:   xxx $xxxx
         $25ffb  xx xx:      xxx $xx
-        $25ffd  xx xx:      xxx $xx
-        $25fff  xx xx:      xxx $xx
+        $25ffd  xx xx:      xxx ScreenXLo
+        $25fff  xx xx:      xxx ScreenYLo
         ;; RomBank_13                      ; @@ $a001
-        $26001  xx xx:      xxx $xx
-        $26003  xx xx:      xxx $xx
+        $26001  xx xx:      xxx ScreenXHi
+        $26003  xx xx:      xxx ScreenYHi
         $26005  xx xx xx:   xxx TitleMovieFlushSound
         $26008  xx xx:      xxx #$xx
         $2600a  xx xx xx:   xxx $xxxx
@@ -33766,8 +33768,8 @@ TitleMovieJump_3                ; Preparing computer (6f0=3)
         $260bd  xx xx xx:   xxx $241d8
         $260c0  xx xx xx:   xxx WaitForOAMDMA_alt2
         $260c3  xx xx:      xxx #$xx
-        $260c5  xx xx:      xxx $xx
-        $260c7  xx xx:      xxx $xx
+        $260c5  xx xx:      xxx ScreenYLo
+        $260c7  xx xx:      xxx ScreenYHi
         $260c9  xx xx:      xxx #$xx
         $260cb  xx xx xx:   xxx $xxxx
         $260ce  xx xx:      xxx #$xx
@@ -34247,9 +34249,9 @@ DataTable_264b1
 ;;; UNUSED??? (12 bytes)
         $264b3  xx xx:      xxx #$xx
         $264b5  xx xx xx:   xxx $xxxx
-        $264b8  xx xx:      xxx $xx
+        $264b8  xx xx:      xxx ScreenYHi
         $264ba  xx xx:      xxx #$xx
-        $264bc  xx xx:      xxx $xx
+        $264bc  xx xx:      xxx ScreenYHi
         $264be  xx:         xxx
 ;;; --------------------------------
         $264bf  xx xx:      xxx #$xx
@@ -34442,7 +34444,7 @@ DataTable_2656e
         $26631  xx xx xx:   xxx $xxxx
         $26634  xx xx xx:   xxx $25f42,y
         $26637  xx xx xx:   xxx $xxxx
-        $2663a  xx xx:      xxx $xx
+        $2663a  xx xx:      xxx ScreenYHi
         $2663c  xx xx:      xxx $xx
         $2663e  xx:         xxx
 ;;; --------------------------------
@@ -34479,12 +34481,12 @@ TitleMovieJump_5                ; Preparing main title menu (6f0=5)
         $26678  xx xx xx:   xxx $xxxx
         $2667b  xx xx xx:   xxx $xxxx
         $2667e  xx xx xx:   xxx $xxxx
-        $26681  xx xx:      xxx $xx
-        $26683  xx xx:      xxx $xx
-        $26685  xx xx:      xxx $xx
-        $26687  xx xx:      xxx $xx
+        $26681  xx xx:      xxx ScreenXLo
+        $26683  xx xx:      xxx ScreenYLo
+        $26685  xx xx:      xxx ScreenXHi
+        $26687  xx xx:      xxx ScreenYHi
         $26689  xx xx:      xxx #$xx
-        $2668b  xx xx:      xxx $xx
+        $2668b  xx xx:      xxx ScreenYLo
         $2668d  xx xx xx:   xxx $241d8
         $26690  xx xx xx:   xxx WaitForOAMDMA_alt2
         $26693  xx xx:      xxx #$xx
@@ -34704,8 +34706,8 @@ TitleLoopSceneJump_02
         $2681f  xx xx:      xxx $xx
         $26821  xx xx:      xxx #$xx
         $26823  xx xx xx:   xxx $xxxx
-        $26826  xx xx:      xxx $xx
-        $26828  xx xx:      xxx $xx
+        $26826  xx xx:      xxx ScreenYLo
+        $26828  xx xx:      xxx ScreenYHi
         $2682a  xx xx xx:   xxx WriteRectangleToNametable
         $2682d  xx xx:      xxx #$xx
         $2682f  xx xx xx:   xxx $242be
@@ -34935,7 +34937,7 @@ TitleLoopSceneJump_0d
         $26a1b  xx:         xxx
         $26a1c  xx:         xxx
         $26a1d  xx xx:      xxx #$xx
-        $26a1f  xx xx:      xxx $xx
+        $26a1f  xx xx:      xxx ScreenYHi
         $26a21  xx xx xx:   xxx $xxxx
         $26a24  xx xx:      xxx + ; $26a27
         $26a26  xx:          xxx
@@ -34965,7 +34967,7 @@ TitleLoopSceneJump_10
         $26a55  xx xx:      xxx #$xx
         $26a57  xx xx xx:   xxx BlankNametable
         $26a5a  xx xx:      xxx #$xx
-        $26a5c  xx xx:      xxx $xx
+        $26a5c  xx xx:      xxx ScreenYHi
         $26a5e  xx xx:      xxx #$xx
         $26a60  xx xx xx:   xxx $xxxx
         $26a63  xx xx xx:   xxx $2491f
@@ -35137,10 +35139,10 @@ TitleMovieJump_1                ; Switching to intro movie (6f0=1)
         $26bc8  xx xx xx:   xxx $xxxx
         $26bcb  xx xx xx:   xxx $xxxx
         $26bce  xx xx:      xxx $xx
-        $26bd0  xx xx:      xxx $xx
-        $26bd2  xx xx:      xxx $xx
-        $26bd4  xx xx:      xxx $xx
-        $26bd6  xx xx:      xxx $xx
+        $26bd0  xx xx:      xxx ScreenXLo
+        $26bd2  xx xx:      xxx ScreenYLo
+        $26bd4  xx xx:      xxx ScreenXHi
+        $26bd6  xx xx:      xxx ScreenYHi
         $26bd8  xx xx:      xxx #$xx
         $26bda  xx xx xx:   xxx $xxxx
         $26bdd  xx xx xx:   xxx $xxxx
@@ -35181,9 +35183,9 @@ DataTable_26c07
         $26c53  xx xx xx:   xxx $xxxx
         $26c56  xx xx xx:   xxx $xxxx
         $26c59  xx xx:      xxx #$xx
-        $26c5b  xx xx:      xxx $xx
+        $26c5b  xx xx:      xxx ScreenYHi
         $26c5d  xx xx:      xxx #$xx
-        $26c5f  xx xx:      xxx $xx
+        $26c5f  xx xx:      xxx ScreenYLo
         $26c61  xx xx:      xxx #$xx
         $26c63  xx xx:      xxx #$xx
         $26c65  xx xx:      xxx #$xx
@@ -35238,10 +35240,10 @@ DataTable_26c07
 DataTable_26cda
         $26cda              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
 ;;; --------------------------------
-        $26ce9  xx xx:      xxx $xx
+        $26ce9  xx xx:      xxx ScreenYLo
         $26ceb  xx:         xxx
         $26cec  xx xx:      xxx #$xx
-        $26cee  xx xx:      xxx $xx
+        $26cee  xx xx:      xxx ScreenYLo
         $26cf0  xx xx:      xxx #$xx
         $26cf2  xx xx:      xxx $xx
         $26cf4  xx:         xxx
@@ -35262,10 +35264,10 @@ DataTable_26cda
         $26d13  xx:         xxx
         $26d14  xx xx:      xxx #$xx
         $26d16  xx xx xx:   xxx $xxxx
-        $26d19  xx xx:      xxx $xx
+        $26d19  xx xx:      xxx ScreenYLo
         $26d1b  xx:         xxx
         $26d1c  xx xx:      xxx #$xx
-        $26d1e  xx xx:      xxx $xx
+        $26d1e  xx xx:      xxx ScreenYLo
         $26d20  xx xx:      xxx $xx
         $26d22  xx:         xxx
 ;;; --------------------------------
@@ -35399,8 +35401,8 @@ DataTable_26df5
         $26e4a  xx xx:      xxx #$xx
         $26e4c  xx xx xx:   xxx BlankNametable
         $26e4f  xx xx:      xxx #$xx
-        $26e51  xx xx:      xxx $xx
-        $26e53  xx xx:      xxx $xx
+        $26e51  xx xx:      xxx ScreenYHi
+        $26e53  xx xx:      xxx ScreenYLo
         $26e55  xx xx:      xxx #$xx
         $26e57  xx xx xx:   xxx $xxxx
         $26e5a  xx xx xx:   xxx $24d73
@@ -35451,17 +35453,17 @@ DataTable_26ec2
         $26ed0              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
         $26ee0              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
 ;;; --------------------------------
-        $26eea  xx xx:      xxx $xx
+        $26eea  xx xx:      xxx ScreenYLo
         $26eec  xx:         xxx
         $26eed  xx xx:      xxx #$xx
-        $26eef  xx xx:      xxx $xx
+        $26eef  xx xx:      xxx ScreenYLo
         $26ef1  xx xx:      xxx #$xx
         $26ef3  xx xx:      xxx $xx
         $26ef5  xx:         xxx
 ;;; --------------------------------
         $26ef6  xx xx:      xxx #$xx
-        $26ef8  xx xx:      xxx $xx
-        $26efa  xx xx:      xxx $xx
+        $26ef8  xx xx:      xxx ScreenYLo
+        $26efa  xx xx:      xxx ScreenYHi
         $26efc  xx xx:      xxx #$xx
         $26efe  xx xx xx:   xxx $xxxx
         $26f01  xx xx:      xxx #$xx
@@ -35586,8 +35588,8 @@ DataTable_26fbb
         $27017  xx xx xx:   xxx $xxxx
         $2701a  xx xx:      xxx #$xx
         $2701c  xx xx xx:   xxx $xxxx
-        $2701f  xx xx:      xxx $xx
-        $27021  xx xx:      xxx $xx
+        $2701f  xx xx:      xxx ScreenYLo
+        $27021  xx xx:      xxx ScreenYHi
         $27023  xx xx xx:   xxx $24e67
         $27026  xx xx:      xxx $xx
         $27028  xx xx xx:   xxx $24e68
@@ -37784,13 +37786,13 @@ BankSwitch8k_A000_alt
         $28868  xx:         xxx
 ;;; --------------------------------
 EnableNMI_alt
-        $28869  xx xx:      xxx $xx
+        $28869  xx xx:      xxx PpuCtrlShadow
         $2886b  xx xx:      xxx #$xx
         $2886d  xx xx xx:   xxx PPUCTRL
         $28870  xx:         xxx
 ;;; --------------------------------
 DisableNMI_alt
-        $28871  xx xx:      xxx $xx
+        $28871  xx xx:      xxx PpuCtrlShadow
         $28873  xx xx:      xxx #$xx
         $28875  xx xx xx:   xxx PPUCTRL
         $28878  xx:         xxx
@@ -44230,7 +44232,7 @@ UpdateHPDisplayInternal
         $34d35  xx xx:       xxx #$xx
         $34d37  xx xx:       xxx #$xx
         $34d39  xx xx:       xxx NametableBufferWriteOffset
-        $34d3b  xx xx:       xxx $xx
+        $34d3b  xx xx:       xxx PpuMaskShadow
         $34d3d  xx xx:       xxx #$xx ; If rendering is off, do immediate write
         $34d3f  xx xx:       xxx + ; $34d44
         $34d41  xx xx xx:     xxx ImmediateWriteNametableDataToPpu
@@ -44309,7 +44311,7 @@ ChargeIndicatorDisplay
         $34dc8  xx xx:       xxx #$xx
         $34dca  xx xx:       xxx #$xx
         $34dcc  xx xx:       xxx $xx
-        $34dce  xx xx:       xxx $xx
+        $34dce  xx xx:       xxx PpuMaskShadow
         $34dd0  xx xx:       xxx #$xx
         $34dd2  xx xx:       xxx $xx
         $34dd4  xx xx xx:    xxx ImmediateWriteNametableDataToPpu
@@ -44387,7 +44389,7 @@ DisplayNumberInternal
         $34eb1  xx xx:       xxx #$xx
         $34eb3  xx xx:       xxx #$xx
         $34eb5  xx xx:       xxx $xx
-        $34eb7  xx xx:       xxx $xx
+        $34eb7  xx xx:       xxx PpuMaskShadow
         $34eb9  xx xx:       xxx #$xx ; if rendering is disabled, write immediate
         $34ebb  xx xx:       xxx + ; $34ec0
         $34ebd  xx xx xx:     xxx ImmediateWriteNametableDataToPpu
@@ -45988,14 +45990,14 @@ CheckDirectionAgainstTerrain
 ApplyInvisibleWallAtScreenEdge
         $359ff  xx xx:      xxx $xx
         $35a01  xx:         xxx
-        $35a02  xx xx:      xxx $xx
+        $35a02  xx xx:      xxx ScreenXLo
         $35a04  xx xx:      xxx #$xx
         $35a06  xx xx:      xxx ++ ; $35a25
         $35a08  xx xx:       xxx #$xx
         $35a0a  xx xx:       xxx ++ ; $35a25
         $35a0c  xx xx:        xxx $xx
         $35a0e  xx:           xxx
-        $35a0f  xx xx:        xxx $xx
+        $35a0f  xx xx:        xxx ScreenYLo
         $35a11  xx xx:        xxx + ; $35a15
         $35a13  xx xx:         xxx #$xx
 +       $35a15  xx xx:        xxx #$xx
@@ -47360,15 +47362,15 @@ SpawnTowerEscalator
         $3646f  xx xx:       xxx $xx
         $36471  xx xx:       xxx $xx
         $36473  xx xx:       xxx $xx
-        $36475  xx xx:       xxx $xx
+        $36475  xx xx:       xxx PpuMaskShadow
         $36477  xx xx:       xxx #$xx
-        $36479  xx xx:       xxx $xx
+        $36479  xx xx:       xxx PpuMaskShadow
         $3647b  xx xx xx:    xxx WaitForOAMDMA
         $3647e  xx xx:       xxx #$xx
         $36480  xx xx xx:    xxx DrawFullScreenByUsingVerticalScroll
-        $36483  xx xx:       xxx $xx
+        $36483  xx xx:       xxx PpuMaskShadow
         $36485  xx xx:       xxx #$xx
-        $36487  xx xx:       xxx $xx
+        $36487  xx xx:       xxx PpuMaskShadow
         $36489  xx:         xxx
         $3648a  xx:         xxx
         $3648b  xx:         xxx
@@ -50730,22 +50732,22 @@ DrawAllObjectSpritesInternal
         $38039  xx xx:       xxx +++ ; $3809a - $4a0,x == 0 => do not show
         $3803b  xx xx:       xxx $xx,x
         $3803d  xx:          xxx
-        $3803e  xx xx:       xxx $xx
+        $3803e  xx xx:       xxx ScreenXLo
         $38040  xx:          xxx
         $38041  xx xx:       xxx $xx,x
-        $38043  xx xx:       xxx $xx
+        $38043  xx xx:       xxx ScreenXHi
         $38045  xx xx:       xxx +++ ; $3809a - not on screen
         $38047  xx xx:       xxx $xx
         $38049  xx:          xxx
         $3804a  xx xx xx:    xxx $xxxx,x
         $3804d  xx xx:       xxx $xx,x
-        $3804f  xx xx:       xxx $xx
+        $3804f  xx xx:       xxx ScreenYLo
         $38051  xx xx:       xxx $xx,x
-        $38053  xx xx:       xxx $xx
+        $38053  xx xx:       xxx ScreenYHi
         $38055  xx xx:       xxx +++ ; $3809a
         $38057  xx xx:       xxx $xx,x
         $38059  xx:          xxx
-        $3805a  xx xx:       xxx $xx
+        $3805a  xx xx:       xxx ScreenYLo
         $3805c  xx xx:       xxx + ; $38060
         $3805e  xx xx:        xxx #$xx
 +       $38060  xx xx:       xxx #$xx
@@ -57010,13 +57012,13 @@ BankSwitch8k_A000
         $3c435  xx:         xxx
 ;;; --------------------------------
 EnableNMI
-        $3c436  xx xx:      xxx $xx
+        $3c436  xx xx:      xxx PpuCtrlShadow
         $3c438  xx xx:      xxx #$xx
         $3c43a  xx xx xx:   xxx PPUCTRL
         $3c43d  xx:         xxx
 ;;; --------------------------------
 DisableNMI
-        $3c43e  xx xx:      xxx $xx
+        $3c43e  xx xx:      xxx PpuCtrlShadow
         $3c440  xx xx:      xxx #$xx
         $3c442  xx xx xx:   xxx PPUCTRL
         $3c445  xx:         xxx
@@ -57026,46 +57028,46 @@ DisableNMI
 ;;; being completely unused; probably only included as part
 ;;; of some standard library (this is 60 bytes we could reclaim).
 DisableRendering
-        $3c446  xx xx:      xxx $xx
+        $3c446  xx xx:      xxx PpuMaskShadow
         $3c448  xx xx:      xxx #$xx
         $3c44a  xx xx xx:   xxx PPUMASK
-        $3c44d  xx xx:      xxx $xx
+        $3c44d  xx xx:      xxx PpuMaskShadow
         $3c44f  xx:         xxx
 ;;; --------------------------------
 ;;; Turn on sprites and background
 EnableRendering
-        $3c450  xx xx:      xxx $xx
+        $3c450  xx xx:      xxx PpuMaskShadow
         $3c452  xx xx:      xxx #$xx
         $3c454  xx xx xx:   xxx PPUMASK
-        $3c457  xx xx:      xxx $xx
+        $3c457  xx xx:      xxx PpuMaskShadow
         $3c459  xx:         xxx
 ;;; --------------------------------
 DisableBackgroundRendering
-        $3c45a  xx xx:      xxx $xx
+        $3c45a  xx xx:      xxx PpuMaskShadow
         $3c45c  xx xx:      xxx #$xx
-        $3c45e  xx xx xx:   xxx $xxxx
-        $3c461  xx xx:      xxx $xx
+        $3c45e  xx xx xx:   xxx PPUMASK
+        $3c461  xx xx:      xxx PpuMaskShadow
         $3c463  xx:         xxx
 ;;; --------------------------------
 EnableBackgroundRendering
-        $3c464  xx xx:      xxx $xx
+        $3c464  xx xx:      xxx PpuMaskShadow
         $3c466  xx xx:      xxx #$xx
-        $3c468  xx xx xx:   xxx $xxxx
-        $3c46b  xx xx:      xxx $xx
+        $3c468  xx xx xx:   xxx PPUMASK
+        $3c46b  xx xx:      xxx PpuMaskShadow
         $3c46d  xx:         xxx
 ;;; --------------------------------
 DisableSpriteRendering
-        $3c46e  xx xx:      xxx $xx
+        $3c46e  xx xx:      xxx PpuMaskShadow
         $3c470  xx xx:      xxx #$xx
-        $3c472  xx xx xx:   xxx $xxxx
-        $3c475  xx xx:      xxx $xx
+        $3c472  xx xx xx:   xxx PPUMASK
+        $3c475  xx xx:      xxx PpuMaskShadow
         $3c477  xx:         xxx
 ;;; --------------------------------
 EnableSpriteRendering
-        $3c478  xx xx:      xxx $xx
+        $3c478  xx xx:      xxx PpuMaskShadow
         $3c47a  xx xx:      xxx #$xx
-        $3c47c  xx xx xx:   xxx $xxxx
-        $3c47f  xx xx:      xxx $xx
+        $3c47c  xx xx xx:   xxx PPUMASK
+        $3c47f  xx xx:      xxx PpuMaskShadow
         $3c481  xx:         xxx
 ;;; --------------------------------
 ;;; Write to the Nametable buffer with a precomputed header.
@@ -57134,7 +57136,7 @@ StageNametableWriteFromTable
         $3c4dd  xx xx:        xxx NametableBufferWriteOffset
         ;; Check the PPUMASK - if rendering is disabled (both bg and sprites)
         ;; then do an immediate write - not sure how this happens, but it does.
-        $3c4df  xx xx:        xxx $xx
+        $3c4df  xx xx:        xxx PpuMaskShadow
         $3c4e1  xx xx:        xxx #$xx
         $3c4e3  xx xx:        xxx + ; $3c4e8
         $3c4e5  xx xx xx:      xxx ImmediateWriteNametableDataToPpu
@@ -57277,7 +57279,7 @@ WriteNametableDataToPpu
         ;; :04 bit of $0 and write it to PPUCTRL.
         $3c683  xx xx xx:   xxx $xxxx,x
         $3c686  xx xx:      xxx $xx
-        $3c688  xx xx:      xxx $xx
+        $3c688  xx xx:      xxx PpuCtrlShadow
         $3c68a  xx xx:      xxx #$xx ; #~$04
         $3c68c  xx xx:      xxx $xx
         $3c68e  xx xx:      xxx + ; $3c692
@@ -57595,13 +57597,13 @@ ClearBackgroundPaletteAndAttributes
 ;;; --------------------------------
 ;;; Temporarily disable NMI and immediately write some data.
 ImmediateWriteNametableDataToPpu
-        $3c8b2  xx xx:      xxx $xx
+        $3c8b2  xx xx:      xxx PpuCtrlShadow
         $3c8b4  xx:         xxx
         $3c8b5  xx xx:       xxx #$xx ; Disable NMI
-        $3c8b7  xx xx:       xxx $xx
+        $3c8b7  xx xx:       xxx PpuCtrlShadow
         $3c8b9  xx xx xx:    xxx WriteNametableDataToPpu
         $3c8bc  xx:         xxx
-        $3c8bd  xx xx:      xxx $xx
+        $3c8bd  xx xx:      xxx PpuCtrlShadow
         $3c8bf  xx:         xxx
 ;;; --------------------------------
         ;; NOTE: This looks like four rows of text, more or less, including
@@ -57714,10 +57716,10 @@ MainLoopJump_00_PrepareGame
         $3c9b7  xx xx xx:   xxx $xxxx
         $3c9ba  xx xx xx:   xxx $xxxx
         $3c9bd  xx xx xx:   xxx $xxxx
-        $3c9c0  xx xx xx:   xxx $xxxx
-        $3c9c3  xx xx xx:   xxx $xxxx
-        $3c9c6  xx xx xx:   xxx $xxxx
-        $3c9c9  xx xx xx:   xxx $xxxx
+        $3c9c0  xx xx xx:   xxx $xxxx ; ScreenXLo
+        $3c9c3  xx xx xx:   xxx $xxxx ; ScreenXHi
+        $3c9c6  xx xx xx:   xxx $xxxx ; ScreenYLo
+        $3c9c9  xx xx xx:   xxx $xxxx ; ScreenYHi
         $3c9cc  xx xx:      xxx ScreenMode
         $3c9ce  xx xx:      xxx #$xx
         $3c9d0  xx xx xx:   xxx PlayerMP
@@ -58021,9 +58023,9 @@ MainGameModeJump_1c_ErrorMessage
 ;;; --------------------------------
 MainGameModeJump_1f_DynaAppears
         $3cc4d  xx xx xx:   xxx WaitForNametableFlush
-        $3cc50  xx xx:      xxx $xx
+        $3cc50  xx xx:      xxx PpuMaskShadow
         $3cc52  xx xx:      xxx #$xx
-        $3cc54  xx xx:      xxx $xx
+        $3cc54  xx xx:      xxx PpuMaskShadow
         $3cc56  xx xx xx:   xxx WaitForOAMDMA
         $3cc59  xx xx:      xxx $xx
         $3cc5b  xx xx:      xxx $xx
@@ -58078,9 +58080,9 @@ MainGameModeJump_1f_DynaAppears
         $3ccb8  xx xx:       xxx $xx
         $3ccba  xx xx:       xxx #$xx
         $3ccbc  xx xx:      xxx - ; $3ccb1
-        $3ccbe  xx xx:      xxx $xx
+        $3ccbe  xx xx:      xxx PpuMaskShadow
         $3ccc0  xx xx:      xxx #$xx
-        $3ccc2  xx xx:      xxx $xx
+        $3ccc2  xx xx:      xxx PpuMaskShadow
         $3ccc4  xx xx xx:   xxx WaitForOAMDMA
         $3ccc7  xx xx:      xxx #GAME_MODE_NORMAL
         $3ccc9  xx xx:      xxx GameMode
@@ -58207,7 +58209,7 @@ MainGameModeJump_1f_DynaAppears
         $3cdba  xx xx xx:   xxx BankSwitch8k_8000
         $3cdbd  xx xx xx:   xxx $34c0e
 ;;; --------------------------------
-        $3cdc0  xx xx:      xxx $xx
+        $3cdc0  xx xx:      xxx ScreenMode
         $3cdc2  xx xx:      xxx $xx
         $3cdc4  xx xx xx:   xxx $xxxx
         $3cdc7  xx xx:      xxx #$xx
@@ -58394,7 +58396,7 @@ MainGameModeJump_1f_DynaAppears
         $3cf0d  xx xx xx:   xxx StageNametableWriteFromTable
         $3cf10  xx xx xx:   xxx WaitForOAMDMA
 ;;; --------------------------------
-        $3cf13  xx xx:      xxx $xx
+        $3cf13  xx xx:      xxx ScreenMode
         $3cf15  xx xx:      xxx #$xx
         $3cf17  xx xx:      xxx $xx
         $3cf19  xx xx:      xxx #SCREEN_MODE_NORMAL
@@ -59705,9 +59707,9 @@ MainGameModeJump_12_Inventory
         ;; --------------------------------
 +       $3d930  xx xx:      xxx #$xx
         $3d932  xx xx xx:   xxx $xxxx
-        $3d935  xx xx:      xxx $xx
+        $3d935  xx xx:      xxx PpuMaskShadow
         $3d937  xx xx:      xxx #$xx
-        $3d939  xx xx:      xxx $xx
+        $3d939  xx xx:      xxx PpuMaskShadow
         $3d93b  xx xx xx:   xxx WaitForOAMDMA
         $3d93e  xx xx xx:   xxx PlayerLevel
         $3d941  xx:         xxx
@@ -59996,7 +59998,7 @@ MainGameModeJump_1d
         $3db85  xx xx:      xxx $xx
         $3db87  xx xx:      xxx #$xx
         $3db89  xx xx xx:   xxx $xxxx
-        $3db8c  xx xx:      xxx $xx
+        $3db8c  xx xx:      xxx ScreenYLo
         $3db8e  xx xx:      xxx #$xx
         $3db90  xx xx:      xxx $xx
         $3db92  xx xx:      xxx #$xx
@@ -60239,7 +60241,7 @@ CheckWarpPointFlag
         $3dd6a  xx:         xxx
 ;;; --------------------------------
 MainGameModeJump_15_TelepathyMagic
-        $3dd6b  xx xx:      xxx $xx
+        $3dd6b  xx xx:      xxx ScreenMode
         $3dd6d  xx:         xxx
         $3dd6e  xx xx:       xxx #$xx
         $3dd70  xx xx xx:    xxx $xxxx
@@ -60390,7 +60392,7 @@ JumpTable_3df0e_03
         $3de8d  xx:         xxx
         $3de8e  xx xx:      xxx #$xx
         $3de90  xx xx:      xxx $xx
-        $3de92  xx xx:      xxx $xx
+        $3de92  xx xx:      xxx ScreenYLo
         $3de94  xx xx:      xxx #$xx
         $3de96  xx xx:      xxx $xx
         $3de98  xx xx:      xxx #$xx
@@ -60404,7 +60406,7 @@ DataTable_3dea1
         $3deb1              .byte $xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx,$xx
 ;;; --------------------------------
 MainGameModeJump_17_ChangeMagicMenu
-        $3dec1  xx xx:      xxx $xx
+        $3dec1  xx xx:      xxx ScreenMode
         $3dec3  xx:         xxx
         $3dec4  xx xx:       xxx #$xx
         $3dec6  xx xx xx:    xxx $xxxx
@@ -60515,7 +60517,7 @@ JumpTable_3df0e_00
         $3dfab  xx xx:      xxx $xx
         $3dfad  xx xx:      xxx #$xx
         $3dfaf  xx xx xx:   xxx $xxxx
-        $3dfb2  xx xx:      xxx $xx
+        $3dfb2  xx xx:      xxx ScreenYLo
         $3dfb4  xx xx:      xxx #$xx
         $3dfb6  xx xx:      xxx $xx
         $3dfb8  xx xx:      xxx #$xx
@@ -60537,7 +60539,7 @@ JumpTable_3df0e_00
         $3dfd9  xx xx xx:   xxx $xxxx,x
         $3dfdc  xx:         xxx
         $3dfdd  xx xx:      xxx $xx
-        $3dfdf  xx xx:      xxx $xx
+        $3dfdf  xx xx:      xxx ScreenYLo
         $3dfe1  xx xx:      xxx #$xx
         $3dfe3  xx xx:      xxx $xx
         $3dfe5  xx xx:      xxx #$xx
@@ -60719,14 +60721,14 @@ AnimateBackgroundAndRespawn
 ClcIfObjectIsOnScreen
         $3e12b  xx xx:      xxx $xx,x
         $3e12d  xx:         xxx
-        $3e12e  xx xx:      xxx $xx ; set carry flag for next SBC
+        $3e12e  xx xx:      xxx ScreenXLo ; set carry flag for next SBC
         $3e130  xx xx:      xxx $xx,x
-        $3e132  xx xx:      xxx $xx
+        $3e132  xx xx:      xxx ScreenXHi
         $3e134  xx xx:      xxx + ; $3e142
         $3e136  xx xx:      xxx $xx,x
-        $3e138  xx xx:      xxx $xx
+        $3e138  xx xx:      xxx ScreenYLo
         $3e13a  xx xx:      xxx $xx,x
-        $3e13c  xx xx:      xxx $xx
+        $3e13c  xx xx:      xxx ScreenYHi
         $3e13e  xx xx:      xxx + ; $3e142
         $3e140  xx:         xxx
         $3e141  xx:         xxx
@@ -61242,8 +61244,8 @@ ExitTypeJump_0_Normal
         $3e44d  xx xx xx:   xxx CheckForDwarfChild
         $3e450  xx xx xx:   xxx CheckForShyronMassacre
         $3e453  xx xx:      xxx #$xx
-        $3e455  xx xx:      xxx $xx
-        $3e457  xx xx:      xxx $xx
+        $3e455  xx xx:      xxx ScreenXLo
+        $3e457  xx xx:      xxx ScreenYLo
         $3e459  xx xx:      xxx #$xx
         $3e45b  xx xx:      xxx $xx
         $3e45d  xx xx:      xxx #$xx
@@ -61286,9 +61288,9 @@ ExitTypeJump_0_Normal
         $3e4a7  xx xx:      xxx $xx
         $3e4a9  xx xx:      xxx #$xx
         $3e4ab  xx xx:      xxx ScreenMode
-        $3e4ad  xx xx:      xxx $xx
+        $3e4ad  xx xx:      xxx PpuMaskShadow
         $3e4af  xx xx:      xxx #$xx
-        $3e4b1  xx xx:      xxx $xx
+        $3e4b1  xx xx:      xxx PpuMaskShadow
         $3e4b3  xx xx xx:   xxx WaitForOAMDMA
         $3e4b6  xx xx xx:   xxx WaitForNametableFlush
         $3e4b9  xx xx:      xxx #$xx
@@ -61975,7 +61977,7 @@ Unknown_3e993
         $3e9a0  xx xx xx:   xxx AddDisplacementVectorLong
         $3e9a3  xx xx:      xxx #$xx
 -       $3e9a5  xx xx:       xxx $xx,x
-        $3e9a7  xx xx:       xxx $xx,x
+        $3e9a7  xx xx:       xxx ScreenXLo,x
         $3e9a9  xx:          xxx
         $3e9aa  xx xx:      xxx - ; $3e9a5
         $3e9ac  xx:         xxx
@@ -62288,10 +62290,10 @@ UpdatePpuScroll
         $3eb80  xx:         xxx
         $3eb81  xx xx:      xxx #$xx
         $3eb83  xx xx:      xxx $xx
-        $3eb85  xx xx:      xxx $xx
+        $3eb85  xx xx:      xxx PpuCtrlShadow
         $3eb87  xx xx:      xxx #$xx
         $3eb89  xx xx:      xxx $xx
-        $3eb8b  xx xx:      xxx $xx
+        $3eb8b  xx xx:      xxx PpuCtrlShadow
         $3eb8d  xx xx xx:   xxx PPUCTRL
         $3eb90  xx:         xxx
 ;;; --------------------------------
@@ -62421,18 +62423,18 @@ PrepareNametableStageForVerticalScrollInternal
         $3ec4d  xx xx:      xxx #$xx
         $3ec4f  xx xx:      xxx #$xx
         $3ec51  xx xx:      xxx $xx
-        $3ec53  xx xx:      xxx $xx
+        $3ec53  xx xx:      xxx PpuMaskShadow
         $3ec55  xx xx:      xxx #$xx
         $3ec57  xx xx:      xxx + ; $3ec5c
         $3ec59  xx xx xx:   xxx EnableNMI
 ;;; --------------------------------
-+       $3ec5c  xx xx:      xxx $xx
++       $3ec5c  xx xx:      xxx PPUCTRL
         $3ec5e  xx:         xxx
         $3ec5f  xx xx:       xxx #$xx
-        $3ec61  xx xx:       xxx $xx
+        $3ec61  xx xx:       xxx PPUCTRL
         $3ec63  xx xx xx:    xxx WriteNametableDataToPpu
         $3ec66  xx:         xxx
-        $3ec67  xx xx:      xxx $xx
+        $3ec67  xx xx:      xxx PPUCTRL
         $3ec69  xx xx xx:   xxx EnableNMI
 ;;; --------------------------------
 ;;; Returns the Y-th bit of $62f0 bitset in A (and Z).
@@ -62472,9 +62474,9 @@ PrepareNametableStageForHorizontalScroll
         $3eca4  xx:         xxx
         $3eca5  xx:         xxx
         $3eca6  xx xx:      xxx #$xx
-        $3eca8  xx xx:      xxx $xx
+        $3eca8  xx xx:      xxx + ; $3ecac
         $3ecaa  xx xx:      xxx #$xx
-        $3ecac  xx xx:      xxx #$xx
++       $3ecac  xx xx:      xxx #$xx
         $3ecae  xx xx:      xxx $xx
         $3ecb0  xx xx:      xxx #$xx
         $3ecb2  xx:         xxx
@@ -63433,8 +63435,8 @@ HandleReset
         $3f2a6  xx xx:      xxx #$xx
         $3f2a8  xx:         xxx
         $3f2a9  xx xx:      xxx #$xx
-        $3f2ab  xx xx xx:   xxx $xxxx
-        $3f2ae  xx xx xx:   xxx $xxxx
+        $3f2ab  xx xx xx:   xxx PPUCTRL
+        $3f2ae  xx xx xx:   xxx PPUMASK
         $3f2b1  xx xx:      xxx #$xx
 --      $3f2b3  xx xx xx:     xxx $xxxx
         $3f2b6  xx xx:       xxx -- ; $3f2b3
@@ -63443,7 +63445,7 @@ HandleReset
         $3f2bd  xx:          xxx
         $3f2be  xx xx:      xxx -- ; $3f2b3
         $3f2c0  xx xx:      xxx #$xx
-        $3f2c2  xx xx xx:   xxx $xxxx
+        $3f2c2  xx xx xx:   xxx PPUCTRL
         $3f2c5  xx xx:      xxx #$xx
         $3f2c7  xx xx:      xxx $xx
         $3f2c9  xx xx xx:   xxx $xxxx
@@ -63493,7 +63495,7 @@ HandleReset
         $3f333  xx xx:      xxx MainLoopMode
         $3f335  xx xx:      xxx #$xx
         $3f337  xx xx:      xxx $xx
-        $3f339  xx xx:      xxx $xx
+        $3f339  xx xx:      xxx PpuMaskShadow
         $3f33b  xx xx:      xxx #$xx
         $3f33d  xx:         xxx
 -       $3f33e  xx xx xx:    xxx $xxxx,x
@@ -63507,7 +63509,7 @@ HandleReset
         $3f34e  xx xx:      xxx $xx
         $3f350  xx xx:      xxx $xx
         $3f352  xx xx:      xxx #$xx
-        $3f354  xx xx:      xxx $xx
+        $3f354  xx xx:      xxx PpuCtrlShadow
         $3f356  xx xx xx:   xxx $xxxx
         $3f359  xx xx:      xxx #$xx
         $3f35b  xx xx xx:   xxx $xxxx
@@ -63601,16 +63603,16 @@ HandleNMI
         $3f3d3  xx xx:         xxx #$xx
         $3f3d5  xx xx xx:      xxx OAMDMA
         ;; Copy the viewport coords from $[2345] into $7d[89ab]
-        $3f3d8  xx xx:         xxx $xx
+        $3f3d8  xx xx:         xxx ScreenXLo
         $3f3da  xx xx xx:      xxx $xxxx
-        $3f3dd  xx xx:         xxx $xx
+        $3f3dd  xx xx:         xxx ScreenXHi
         $3f3df  xx xx xx:      xxx $xxxx
-        $3f3e2  xx xx:         xxx $xx
+        $3f3e2  xx xx:         xxx ScreenYLo
         $3f3e4  xx xx xx:      xxx $xxxx
-        $3f3e7  xx xx:         xxx $xx
+        $3f3e7  xx xx:         xxx ScreenYHi
         $3f3e9  xx xx xx:      xxx $xxxx
         ;; ???
-        $3f3ec  xx xx:         xxx $xx
+        $3f3ec  xx xx:         xxx ScreenMode
         $3f3ee  xx xx:         xxx #$xx
         $3f3f0  xx xx:         xxx + ; $3f3f6
         $3f3f2  xx xx:         xxx #$xx
@@ -63630,7 +63632,7 @@ HandleNMI
         $3f40d  xx xx:         xxx #$xx
         $3f40f  xx xx xx:      xxx WritePaletteDataToPpu
         ;; Write PPUMASK from $01
-        $3f412  xx xx:         xxx $xx
+        $3f412  xx xx:         xxx PpuMaskShadow
         $3f414  xx xx xx:      xxx PPUMASK
         $3f417  xx xx xx:      xxx ExecuteScreenMode
         $3f41a  xx xx:         xxx $xx ; break holding pattern $3c16d
@@ -63733,7 +63735,7 @@ IRQCallback_01
         $3f492  xx:         xxx
         $3f493  xx:         xxx
         $3f494  xx xx xx:   xxx KillSomeCycles
-        $3f497  xx xx:      xxx $xx
+        $3f497  xx xx:      xxx PpuMaskShadow
         $3f499  xx xx:      xxx #$xx
         $3f49b  xx xx:      xxx #$xx
         $3f49d  xx xx xx:   xxx PPUMASK
@@ -63996,7 +63998,7 @@ AnimateSNKLogoScroll
 ExecuteScreenMode
         $3f6ad  xx xx:      xxx #$xx
         $3f6af  xx xx:      xxx $xx
-        $3f6b1  xx xx:      xxx $xx
+        $3f6b1  xx xx:      xxx ScreenMode
         $3f6b3  xx:         xxx
         $3f6b4  xx:         xxx
         $3f6b5  xx xx xx:   xxx ScreenModeJumpTable,x
@@ -64023,7 +64025,7 @@ ScreenModeJumpTable
 ;;; actually drawn in the nametable, and scrolling is used to move *it*.
 ScreenModeJumpTable_00
 ScreenModeJumpTable_07
-        $3f6d6  xx xx:      xxx $xx
+        $3f6d6  xx xx:      xxx PpuMaskShadow
         ; check that sprites and background are enabled
         $3f6d8  xx xx:      xxx #$xx
         $3f6da  xx xx:      xxx + ; $3f6df
@@ -64032,7 +64034,7 @@ ScreenModeJumpTable_07
         ;; --------------------------------
 +       $3f6df  xx xx xx:   xxx UpdatePpuScrollWrapping
         $3f6e2  xx xx xx:   xxx SelectCHRRomBanks
-        $3f6e5  xx xx:      xxx $xx
+        $3f6e5  xx xx:      xxx PpuCtrlShadow
         $3f6e7  xx:         xxx
         $3f6e8  xx:         xxx
          ; Check if the nametable is currently set to #2 (the menu)
@@ -64091,7 +64093,7 @@ ScreenModeJumpTable_09
         $3f74e  xx xx xx:   xxx SetIRQCallback
 ;;; --------------------------------
 ScreenModeJumpTable_02
-        $3f751  xx xx:      xxx $xx
+        $3f751  xx xx:      xxx PpuCtrlShadow
         $3f753  xx xx:      xxx #$xx
         $3f755  xx xx:      xxx #$xx
         $3f757  xx xx xx:   xxx $xxxx
@@ -64099,7 +64101,7 @@ ScreenModeJumpTable_02
         $3f75c  xx xx xx:   xxx $xxxx
         $3f75f  xx xx xx:   xxx $xxxx
         $3f762  xx xx xx:   xxx SwitchCHRBankForMessageBox
-        $3f765  xx xx:      xxx $xx
+        $3f765  xx xx:      xxx PpuMaskShadow
         $3f767  xx xx:      xxx #$xx
         $3f769  xx xx:      xxx + ; $3f76e
         $3f76b  xx xx xx:    xxx MaybeUpdateMusic
@@ -64107,8 +64109,8 @@ ScreenModeJumpTable_02
 +       $3f76e  xx xx xx:   xxx $3f705
 ;;; --------------------------------
 ScreenModeJumpTable_03
-        $3f771  xx xx:      xxx $xx
-        $3f773  xx xx xx:   xxx $xxxx
+        $3f771  xx xx:      xxx PpuMaskShadow
+        $3f773  xx xx xx:   xxx PPUMASK
         $3f776  xx xx xx:   xxx $3eb6d
         $3f779  xx xx xx:   xxx SelectCHRRomBanks
         $3f77c  xx xx xx:   xxx $xxxx
@@ -64132,9 +64134,9 @@ ScreenModeJumpTable_04
         $3f7a5  xx xx:       xxx #$xx
         $3f7a7  xx xx xx:    xxx SetIRQCallback
         ;;                   ----------
-+       $3f7aa  xx xx:      xxx $xx
++       $3f7aa  xx xx:      xxx PpuMaskShadow
         $3f7ac  xx xx:      xxx #$xx
-        $3f7ae  xx xx xx:   xxx $xxxx
+        $3f7ae  xx xx xx:   xxx $xxxx ; PpuMaskShadow
         $3f7b1  xx xx xx:   xxx IRQDISABLE
         $3f7b4  xx:         xxx
 ;;; --------------------------------
@@ -64155,7 +64157,7 @@ ScreenModeJumpTable_05
         $3f7d8  xx xx xx:   xxx SetIRQCallback
 ;;; --------------------------------
 ScreenModeJumpTable_06
-        $3f7db  xx xx:      xxx $xx
+        $3f7db  xx xx:      xxx PpuCtrlShadow
         $3f7dd  xx xx xx:   xxx $xxxx
         $3f7e0  xx xx:      xxx #$xx
         $3f7e2  xx xx xx:   xxx $xxxx
@@ -64272,8 +64274,8 @@ WritePaletteDataToPpu
         $3f8cf  xx:         xxx
         ;; --------------------------------
 +       $3f8d0  xx xx:      xxx #$xx
-        $3f8d2  xx xx xx:   xxx $xxxx
-        $3f8d5  xx xx:      xxx $xx
+        $3f8d2  xx xx xx:   xxx PPUMASK
+        $3f8d5  xx xx:      xxx PpuCtrlShadow
         $3f8d7  xx xx:      xxx #$xx
         $3f8d9  xx xx xx:   xxx $xxxx
         $3f8dc  xx xx xx:   xxx $xxxx

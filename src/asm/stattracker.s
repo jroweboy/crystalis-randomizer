@@ -3,7 +3,7 @@
 .ifdef _STATS_TRACKING
 
 ; Make sure the stats doesn't bleed into the checksum for save files
-; .assert StatTrackingBase + PERMANENT_LENGTH + CHECKPOINT_LENGTH * 2 < $70f0
+.assert StatTrackingBase + PERMANENT_LENGTH + CHECKPOINT_LENGTH * 2 < $70f0
 
 ;;;------------------------
 ;
@@ -17,8 +17,22 @@
 .reloc
 CheckForStatTrackedItems:
   ; [in] a - current item id (also stored in $29).
-  inc StatsChecks
-  lda $29 ; reload the item to restore the minus flag (set by a cmp earlier)
+  ; set the bit corresponding to this item id
+  txa ; x == $23 == the current item location
+  ; divide by 8 to find the offset into the current items to flip
+  lsr
+  lsr
+  lsr
+  tay
+  txa
+  and #$07 ; mod 8 to find which bit to set
+  tax
+  lda PowersOfTwo,x
+  ora StatsChecks,y
+  sta StatsChecks,y
+  ; reload the item and location to a and x
+  ldx $23
+  lda $29
   bmi @Exit
   cmp #$05 ; check to see if its a sword (items $00 - $04) are wind - crystalis
   bmi @Sword
@@ -30,6 +44,8 @@ CheckForStatTrackedItems:
   beq @BowOfSun
   cmp #$40
   beq @BowOfTruth
+  cmp #$13
+  beq @SpeedBoots
 @Exit:
   rts
 @Sword:
@@ -44,6 +60,9 @@ CheckForStatTrackedItems:
     bpl @AddTimestampAndExit ; unconditional
 @BowOfMoon:
     lda #TsBowMoon
+    bpl @AddTimestampAndExit ; unconditional
+@SpeedBoots:
+    lda #TsSpeedBoots
     bpl @AddTimestampAndExit ; unconditional
 @BowOfTruth:
     lda #TsBowTruth
@@ -352,6 +371,7 @@ UpdateAttributeTable:
 .define Dividend   $a3
 .define Divisor    $a6
 .define DivTmp     $a9
+.define Tmp        $aa
 
 .define Hex0        $b0
 .define DecOnes     $b1
@@ -584,8 +604,19 @@ DrawBasicStats:
     dex
     bpl -
 
-  lda StatsChecks
+  ; count the number of bits in the stats checks
+  lda #0
   sta Hex0
+  ldy #StatsChecksLen-1
+--  lda StatsMimicsLo,y
+    ldx #7
+  -   asl
+      bcc +
+        inc Hex0
+  +   dex
+      bpl -
+    dey
+    bpl --
   jsr HexToDecimal8Bit
   lda DecHundreds
   beq +
@@ -842,20 +873,51 @@ DrawTimestamps:
   sta TmpMinutesOnes
 
   ; update the seconds
-  
   lda Remainder
   sta Dividend
   lda Remainder + 1
   sta Dividend + 1
   lda Remainder + 2
   sta Dividend + 2
-  ; 60.1 frm/sec = 60 or 3c in hex
-  lda #$3c
+  ; 60.1 frm/sec = not clean to divide, so we multiply by 10 to both sides
+  ; and do remainder*10 / 601 We can get away with 16 bit mult because remainder < 3606
+  ; so remainder*10 is always going to fit in 16bit numbers.
+  
+  ; load #601 into the divisor
+  lda #$59
   sta Divisor
-  lda #$00
+  lda #$02
   sta Divisor+1
-  lda #$00
-  sta Divisor+2
+
+  lda #$10
+  sta Dividend
+  lda #$0e
+  sta Dividend+1
+
+  ; multiply by 10
+  ; a * 8 + a * 2
+  asl Dividend
+  rol Dividend+1
+  lda Dividend
+  ; store a * 2
+  sta Tmp
+  lda Dividend+1
+  sta Tmp+1
+  ; a * 4
+  asl Dividend
+  rol Dividend+1
+  ; a * 8
+  asl Dividend
+  rol Dividend+1
+  ; now add a * 8 + a * 2 == a * 10
+  lda Dividend
+  clc
+  adc Tmp
+  sta Dividend
+  lda Dividend+1
+  adc Tmp+1
+  sta Dividend+1
+
   jsr LongDivision24bit
   lda Dividend
   sta Hex0
@@ -865,7 +927,7 @@ DrawTimestamps:
   lda DecOnes
   sta TmpSecondsOnes
 
-  ; Finally draw write the numbers to the $6000 address
+  ; Finally draw write the numbers to the $6000 address 216360
 
 @WriteNumber:
   ldy #8
@@ -975,6 +1037,8 @@ DrawTimestamps:
 .byte "Thun", $0a, $0b, $0c
 @Crystalis:
 .byte "Crys", $0a, $0b, $0c
+@SpeedBoots:
+.byte "SpdBoot"
 TsAllNameLen = * - @TsNameStart
 TsNameLen = 7
 ; Verify that all the names are 7 characters long

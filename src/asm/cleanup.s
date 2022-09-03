@@ -37,10 +37,10 @@ NMIHandler:
 .endif ; _STATS_TRACKING
 
   bit NmiDisable
-  bpl @ContinueNMI
+  bpl ContinueNMI
     inc NmiSkipped
     rti
-@ContinueNMI:
+ContinueNMI:
   pha
     txa
     pha
@@ -175,13 +175,23 @@ WriteNametableDataToPpu:
 ;;; and use the following flag versions instead
 .reloc
 DisableNMI:
+  lda NmiSkipped
+  sta NmiSkipCheck
   DISABLE_NMI
-  rts
-
-.reloc
+- rts
 EnableNMI:
   ENABLE_NMI
-  rts
+  lda NmiSkipped
+  cmp NmiSkipCheck
+  beq -
+    ; we skipped an NMI so we want to run the main NMI right now, which is what used to happen.
+    ; In the original code, NMI was disabled by setting bit 7 in PPUCTRL to prevent an NMI from triggering,
+    ; but during vblank, whenever bit 7 is written to re-enable NMI, this will trigger an NMI immediately
+    ; (until PPUSTATUS is read to clear the NMIflag). we can use NmiSkipped to see if an NMI occurred, and
+    ; if it did, run the main NMI handler for this frame.
+    ; If we don't do this, we end up with one frame of glitched graphics.
+    php
+    jmp ContinueNMI
 
 .reloc
 WaitForOAMDMA:
@@ -193,10 +203,9 @@ WaitForOAMDMA:
 
 .reloc
 ImmediateWriteNametableDataToPpu:
-  DISABLE_NMI
+  jsr DisableNMI
   jsr WriteNametableDataToPpu
-  ENABLE_NMI
-  rts
+  jmp EnableNMI
 
 ;;--------------------------------
 ;; Remove custom NMI en/disables
