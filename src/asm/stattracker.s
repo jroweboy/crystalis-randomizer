@@ -324,7 +324,7 @@ DrawStatsToNMT2:
   pha
     lda #$3d
     jsr BankSwitch8k_a000
-    jsr DrawAllStats
+    jsr DrawAllStatsSkippingCredits
   pla
   sta $6f
   jsr BankSwitch8k_a000
@@ -349,7 +349,7 @@ UpdateAttributeTable:
 @SetTox3x3:
   ; if we are on a boundary attribute (between the hud and the tiles)
   ; then we need to load the original value and OR it with $33
-  ; (set the left two quadrantss to palette 3)
+  ; (set the left two quadrants to palette 3)
   lda $b3f8,x
   ora #$33
   sta $6040,x
@@ -385,6 +385,13 @@ UpdateAttributeTable:
 .define TmpSecondsTens $94
 
 .reloc
+DrawAllStatsSkippingCredits:
+  ; Pause the music because we skipped here from pushing start
+  lda #$a4
+  jsr StartAudioTrack
+  jmp DrawAllStats
+
+.reloc
 DrawAllStats:
   ; Start by drawing the border and background
   jsr DrawBox
@@ -405,9 +412,6 @@ DrawAllStats:
   sta $04
   lda #$01
   sta $05
-  ; Pause the music just in case we skipped here from pushing start
-  lda #$a4
-  jsr StartAudioTrack
   ; and done! Bump $600 to go to the final scene
   inc $0600
   rts

@@ -29,39 +29,31 @@ NMIHandler:
 
 .ifdef _STATS_TRACKING
   inc StatTimerLo
-    bne @CheckIfNMIEnabled
+  bne @CheckIfNMIEnabled
     inc StatTimerMd
-      bne @CheckIfNMIEnabled
+    bne @CheckIfNMIEnabled
       inc StatTimerHi
 @CheckIfNMIEnabled:
 .endif ; _STATS_TRACKING
 
   bit NmiDisable
-  bpl ContinueNMI
+  bpl @ContinueNMI
     inc NmiSkipped
     rti
-ContinueNMI:
+@ContinueNMI:
   pha
-    txa
-    pha
-      tya
-      pha
-        lda #7
-        sta BANKSELECT
-        lda #$3d
-        sta BANKDATA
-        jsr NMIHandlerInternal
-        lda #7
-        sta BANKSELECT
-        lda $6f
-        sta BANKDATA
-        ; Reload the register values and return
-        lda BankSelectShadow
-        sta BANKSELECT
-      pla
-      tay
-    pla
-    tax
+    lda #7
+    sta BANKSELECT
+    lda #$3d
+    sta BANKDATA
+    jsr NMIHandlerInternal
+    lda #7
+    sta BANKSELECT
+    lda $6f
+    sta BANKDATA
+    ; Reload the register values and return
+    lda BankSelectShadow
+    sta BANKSELECT
   pla
 InitialIRQHandler:
   rti
@@ -178,20 +170,40 @@ DisableNMI:
   lda NmiSkipped
   sta NmiSkipCheck
   DISABLE_NMI
-- rts
+  rts
+
+.reloc
 EnableNMI:
-  ENABLE_NMI
+  php
   lda NmiSkipped
   cmp NmiSkipCheck
-  beq -
+  beq +
+  ; Also check that the NMI flag is still on so we don't try to run outside of vblank
+  bit PPUSTATUS
+  bpl +
     ; we skipped an NMI so we want to run the main NMI right now, which is what used to happen.
     ; In the original code, NMI was disabled by setting bit 7 in PPUCTRL to prevent an NMI from triggering,
     ; but during vblank, whenever bit 7 is written to re-enable NMI, this will trigger an NMI immediately
     ; (until PPUSTATUS is read to clear the NMIflag). we can use NmiSkipped to see if an NMI occurred, and
     ; if it did, run the main NMI handler for this frame.
     ; If we don't do this, we end up with one frame of glitched graphics.
-    php
-    jmp ContinueNMI
+    ; Since we know that NMI just ran, its not possible to interrupt this, so just use very simple banking
+    lda $6f
+    pha
+      lda #7
+      sta BANKSELECT
+      lda #$3d
+      sta $6f
+      sta BANKDATA
+      jsr NMIHandlerInternal
+      lda #7
+      sta BANKSELECT
+    pla
+    sta $6f
+    sta BANKDATA
++ ENABLE_NMI
+  plp  
+  rts
 
 .reloc
 WaitForOAMDMA:
@@ -875,6 +887,10 @@ ExecuteScreenMode:
 
 .reloc
 NMIHandlerInternal:
+  txa
+  pha
+  tya
+  pha
   lda PPUSTATUS
   lda OamDisable
   bne @SkipOAMDMA
@@ -947,8 +963,12 @@ NMIHandlerInternal:
   lda PpuMaskShadow
   sta PPUMASK
   inc OamDisable ; flag OAMDMA complete by disabling it
-  jmp ExecuteScreenMode
-  ; implicit rts
+  jsr ExecuteScreenModeInternal
+  pla
+  tay
+  pla
+  tax
+  rts
 
 ExecuteScreenModeInternal:
   lda #0
