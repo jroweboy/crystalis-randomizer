@@ -156,7 +156,7 @@ export function deterministic(rom: Rom, flags: FlagSet): void {
 
   fixFlyableWalls(rom);
   fixMonsterTerrain(rom);
-  fixCrystalis(rom);
+  fixCrystalis(rom, flags);
   fixOpelStatue(rom);
   fixCoinSprites(rom);
   fixChests(rom);
@@ -1332,8 +1332,12 @@ function noBowMode(rom: Rom): void {
 }
 
 // For now this just fixes the shot to be all elements instead of none.
-function fixCrystalis(rom: Rom) {
+function fixCrystalis(rom: Rom, flags: FlagSet) {
   rom.objects[0x33].elements = 0xf;
+  if (flags.shuffleMesiaTower())
+  {
+    rom.trigger(0xa4).conditions.push(rom.flags.SwordOfWind.id, rom.flags.SwordOfFire.id, rom.flags.SwordOfWater.id, rom.flags.SwordOfThunder.id);
+  }
 }
 
 // Enables chests and mimics to appear on every screen by replacing the unused recover graphics
